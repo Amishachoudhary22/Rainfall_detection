@@ -18,7 +18,7 @@ st.set_page_config(
 
 @st.cache_data
 def load_data():
-    return pd.read_csv("data/rainfall.csv")
+    return pd.read_excel("data/india_weather_rainfall_data.xlsx")
 
 
 df = load_data()
