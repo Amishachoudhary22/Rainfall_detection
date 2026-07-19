@@ -263,10 +263,10 @@ st.header("👨‍💻 Developer")
 st.info("""
 Project Developed By
 
-Amisha Choudhary
+Prashant Chaudhary
 
 B.Tech Computer Science & Engineering
-(Bioinformatics)
+(Cloud Computing)
 
 Artificial Intelligence Based Rainfall Prediction System
 """)
