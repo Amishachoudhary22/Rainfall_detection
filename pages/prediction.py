@@ -35,12 +35,58 @@ st.divider()
 # STATE SELECTION
 # ==========================================
 
-states = sorted(df["state"].unique())
+# Dictionary for state abbreviations
+state_mapping = {
+    "AP": "Andhra Pradesh",
+    "AR": "Arunachal Pradesh",
+    "AS": "Assam",
+    "BR": "Bihar",
+    "CG": "Chhattisgarh",
+    "DL": "Delhi",
+    "GA": "Goa",
+    "GJ": "Gujarat",
+    "HR": "Haryana",
+    "HP": "Himachal Pradesh",
+    "JH": "Jharkhand",
+    "KA": "Karnataka",
+    "KL": "Kerala",
+    "MP": "Madhya Pradesh",
+    "MH": "Maharashtra",
+    "MN": "Manipur",
+    "ML": "Meghalaya",
+    "MZ": "Mizoram",
+    "NL": "Nagaland",
+    "OD": "Odisha",
+    "PB": "Punjab",
+    "RJ": "Rajasthan",
+    "SK": "Sikkim",
+    "TN": "Tamil Nadu",
+    "TG": "Telangana",
+    "TR": "Tripura",
+    "UP": "Uttar Pradesh",
+    "UK": "Uttarakhand",
+    "WB": "West Bengal",
+    "AN": "Andaman and Nicobar Islands",
+    "CH": "Chandigarh",
+    "DN": "Dadra and Nagar Haveli and Daman and Diu",
+    "JK": "Jammu and Kashmir",
+    "LA": "Ladakh",
+    "LD": "Lakshadweep",
+    "PY": "Puducherry"
+}
 
-selected_state = st.selectbox(
+# Available abbreviations in your dataset
+state_codes = sorted(df["state"].unique())
+
+# Show full names in the dropdown
+selected_state_name = st.selectbox(
     "Select State",
-    states
+    [state_mapping.get(code, code) for code in state_codes]
 )
+
+# Convert back to abbreviation for filtering
+reverse_mapping = {v: k for k, v in state_mapping.items()}
+selected_state = reverse_mapping[selected_state_name]
 
 # ==========================================
 # DISTRICT SELECTION
