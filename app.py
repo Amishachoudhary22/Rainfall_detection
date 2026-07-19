@@ -249,9 +249,9 @@ st.markdown("""
 ---
 ### 👩‍💻 Developed By
 
-**Amisha Choudhary**
+**Prashant Chaudhary**
 
-B.Tech CSE (Bioinformatics)
+B.Tech CSE (Cloud Computing)
 
 AI-Based Rainfall Prediction System
 """)
