@@ -1,9 +1,28 @@
-# ==========================================
-# PAGE TITLE
-# ==========================================
 import streamlit as st
 import pandas as pd
 import joblib
+
+# ============================
+# LOAD DATA
+# ============================
+
+@st.cache_data
+def load_data():
+    return pd.read_excel("data/india_weather_rainfall_data.xlsx")
+
+df = load_data()
+
+# ============================
+# LOAD MODEL
+# ============================
+
+@st.cache_resource
+def load_model():
+    model = joblib.load("model/xgboost_model.pkl")
+    encoders = joblib.load("model/label_encoders.pkl")
+    return model, encoders
+
+model, encoders = load_model()
 st.title("🌧 Rainfall Prediction")
 
 st.markdown(
