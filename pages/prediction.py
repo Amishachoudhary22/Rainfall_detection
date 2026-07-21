@@ -166,6 +166,7 @@ col1, col2 = st.columns(2)
 with col1:
     st.write("**Station:**", latest["station_name"])
     st.write("**Elevation:**", latest["elevation"], "m")
+    st.write("**Last Recorded Rainfall:**", latest["rainfall"], "mm")
 
 with col2:
 
@@ -173,9 +174,8 @@ with col2:
 
     st.write("**Longitude:**", latest["longitude"])
 
-    st.write("**Last Recorded Rainfall:**", latest["rainfall"], "mm")
+    
 
-st.divider()
 st.divider()
 
 st.subheader("📅 Prediction Date")
