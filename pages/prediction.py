@@ -189,6 +189,10 @@ if predict:
 
     # Encode categorical features
     encoded_month = encoders["month"].transform([latest["month"]])[0]
+    st.write("Month value:", latest["month"])
+    st.write("Month type:", type(latest["month"]))
+    st.write("Encoder classes:", encoders["month"].classes_)
+    st.stop()
     encoded_season = encoders["season"].transform([latest["season"]])[0]
     encoded_station = encoders["station_name"].transform([latest["station_name"]])[0]
     encoded_state = encoders["state"].transform([latest["state"]])[0]
