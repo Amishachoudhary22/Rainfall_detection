@@ -8,11 +8,34 @@ import joblib
 
 @st.cache_data
 def load_data():
-    return pd.read_excel("data/india_weather_rainfall_data.xlsx")
 
-df = load_data()
-st.write(df.columns.tolist())
-st.stop()
+    df = pd.read_excel("data/india_weather_rainfall_data.xlsx")
+
+    df["date_of_record"] = pd.to_datetime(df["date_of_record"])
+
+    # Date features
+    df["year"] = df["date_of_record"].dt.year
+    df["month_num"] = df["date_of_record"].dt.month
+    df["day"] = df["date_of_record"].dt.day
+    df["day_of_week"] = df["date_of_record"].dt.dayofweek
+    df["week"] = df["date_of_record"].dt.isocalendar().week.astype(int)
+
+    # Sort exactly like training
+    df = df.sort_values("date_of_record")
+
+    # Lag features
+    df["rainfall_lag1"] = df["rainfall"].shift(1)
+    df["rainfall_lag2"] = df["rainfall"].shift(2)
+    df["rainfall_lag3"] = df["rainfall"].shift(3)
+
+    # Rolling features
+    df["rainfall_roll3"] = df["rainfall"].rolling(3).mean()
+    df["rainfall_roll7"] = df["rainfall"].rolling(7).mean()
+
+    # Remove rows with NaN
+    df.dropna(inplace=True)
+
+    return df
 
 # ============================
 # LOAD MODEL
@@ -25,6 +48,13 @@ def load_model():
     return joblib.load("model/xgboost_model.pkl")
 
 model = load_model()
+
+encoders = {}
+
+for col in ["month", "season", "station_name", "state", "district"]:
+    le = LabelEncoder()
+    le.fit(df[col].astype(str))
+    encoders[col] = le
 
 # Build fresh encoders from the dataset
 encoders = {}
@@ -203,39 +233,37 @@ if predict:
     encoded_district = encoders["district"].transform([str(latest["district"])])[0]
 
     # Create input dataframe
-    input_df = pd.DataFrame({
-
-        "month":[encoded_month],
-        "season":[encoded_season],
-        "station_name":[encoded_station],
-        "state":[encoded_state],
-        "district":[encoded_district],
-
-        "avg_temp":[avg_temp],
-        "min_temp":[min_temp],
-        "max_temp":[max_temp],
-
-        "wind_speed":[wind_speed],
-        "air_pressure":[air_pressure],
-
-        "elevation":[latest["elevation"]],
-        "latitude":[latest["latitude"]],
-        "longitude":[latest["longitude"]],
-
-        "year":[latest["year"]],
-        "month_num":[latest["month_num"]],
-        "day":[latest["day"]],
-        "day_of_week":[latest["day_of_week"]],
-        "week":[latest["week"]],
-
-        "rainfall_lag1":[latest["rainfall_lag1"]],
-        "rainfall_lag2":[latest["rainfall_lag2"]],
-        "rainfall_lag3":[latest["rainfall_lag3"]],
-
-        "rainfall_roll3":[latest["rainfall_roll3"]],
-        "rainfall_roll7":[latest["rainfall_roll7"]]
-
-    })
+    input_df = pd.DataFrame([{
+        "month": encoded_month,
+        "season": encoded_season,
+        "station_name": encoded_station,
+        "state": encoded_state,
+        "district": encoded_district,
+    
+        "avg_temp": avg_temp,
+        "min_temp": min_temp,
+        "max_temp": max_temp,
+    
+        "wind_speed": wind_speed,
+        "air_pressure": air_pressure,
+    
+        "elevation": latest["elevation"],
+        "latitude": latest["latitude"],
+        "longitude": latest["longitude"],
+    
+        "year": latest["year"],
+        "month_num": latest["month_num"],
+        "day": latest["day"],
+        "day_of_week": latest["day_of_week"],
+        "week": latest["week"],
+    
+        "rainfall_lag1": latest["rainfall_lag1"],
+        "rainfall_lag2": latest["rainfall_lag2"],
+        "rainfall_lag3": latest["rainfall_lag3"],
+    
+        "rainfall_roll3": latest["rainfall_roll3"],
+        "rainfall_roll7": latest["rainfall_roll7"]
+    }])
 
     prediction = model.predict(input_df)[0]
 
