@@ -55,14 +55,17 @@ for col in ["month", "season", "station_name", "state", "district"]:
     le = LabelEncoder()
     le.fit(df[col].astype(str))
     encoders[col] = le
+from datetime import date
 
-# Build fresh encoders from the dataset
-encoders = {}
-
-for col in ["month", "season", "station_name", "state", "district"]:
-    le = LabelEncoder()
-    le.fit(df[col].astype(str))
-    encoders[col] = le
+def get_season(month):
+    if month in ["December", "January", "February"]:
+        return "Winter"
+    elif month in ["March", "April", "May"]:
+        return "Summer"
+    elif month in ["June", "July", "August", "September"]:
+        return "Monsoon"
+    else:
+        return "Post-Monsoon"
 st.title("🌧 Rainfall Prediction")
 
 st.markdown(
@@ -164,7 +167,8 @@ with col1:
 
     st.write("**Station:**", latest["station_name"])
 
-    st.write("**Season:**", latest["season"])
+    st.write("**Station:**", latest["station_name"])
+    st.write("**Elevation:**", latest["elevation"], "m")
 
     st.write("**Elevation:**", latest["elevation"], "m")
 
@@ -177,7 +181,27 @@ with col2:
     st.write("**Last Recorded Rainfall:**", latest["rainfall"], "mm")
 
 st.divider()
+st.divider()
 
+st.subheader("📅 Prediction Date")
+
+prediction_date = st.date_input(
+    "Select Prediction Date",
+    value=date.today()
+)
+
+prediction_month = prediction_date.strftime("%B")
+prediction_year = prediction_date.year
+prediction_month_num = prediction_date.month
+prediction_day = prediction_date.day
+prediction_day_of_week = prediction_date.weekday()
+prediction_week = prediction_date.isocalendar()[1]
+
+prediction_season = get_season(prediction_month)
+
+st.info(
+    f"Month: **{prediction_month}** | Season: **{prediction_season}**"
+)
 # ==========================================
 # WEATHER INPUTS
 # ==========================================
@@ -226,8 +250,8 @@ predict = st.button(
 # ==========================================
 
 if predict:
-    encoded_month = encoders["month"].transform([str(latest["month"])])[0]
-    encoded_season = encoders["season"].transform([str(latest["season"])])[0]
+    encoded_month = encoders["month"].transform([prediction_month])[0]
+    encoded_season = encoders["season"].transform([prediction_season])[0]
     encoded_station = encoders["station_name"].transform([str(latest["station_name"])])[0]
     encoded_state = encoders["state"].transform([str(latest["state"])])[0]
     encoded_district = encoders["district"].transform([str(latest["district"])])[0]
@@ -251,11 +275,11 @@ if predict:
         "latitude": latest["latitude"],
         "longitude": latest["longitude"],
     
-        "year": latest["year"],
-        "month_num": latest["month_num"],
-        "day": latest["day"],
-        "day_of_week": latest["day_of_week"],
-        "week": latest["week"],
+        "year": prediction_year,
+        "month_num": prediction_month_num,
+        "day": prediction_day,
+        "day_of_week": prediction_day_of_week,
+        "week": prediction_week,
     
         "rainfall_lag1": latest["rainfall_lag1"],
         "rainfall_lag2": latest["rainfall_lag2"],
