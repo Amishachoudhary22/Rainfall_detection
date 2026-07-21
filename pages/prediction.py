@@ -193,7 +193,7 @@ if predict:
     st.stop()
     st.write("Encoder classes:", encoders["month"].classes_)
     st.stop()
-    encoded_month = encoders["month"].transform([latest["month"]])[0]
+    encoded_month = latest["month"]
     encoded_season = encoders["season"].transform([latest["season"]])[0]
     encoded_station = encoders["station_name"].transform([latest["station_name"]])[0]
     encoded_state = encoders["state"].transform([latest["state"]])[0]
