@@ -11,6 +11,8 @@ def load_data():
     return pd.read_excel("data/india_weather_rainfall_data.xlsx")
 
 df = load_data()
+st.write(df.columns.tolist())
+st.stop()
 
 # ============================
 # LOAD MODEL
