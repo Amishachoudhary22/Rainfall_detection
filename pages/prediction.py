@@ -181,3 +181,73 @@ predict = st.button(
     "🌧 Predict Rainfall",
     use_container_width=True
 )
+# ==========================================
+# PREDICT
+# ==========================================
+
+if predict:
+
+    # Encode categorical features
+    encoded_month = encoders["month"].transform([latest["month"]])[0]
+    encoded_season = encoders["season"].transform([latest["season"]])[0]
+    encoded_station = encoders["station_name"].transform([latest["station_name"]])[0]
+    encoded_state = encoders["state"].transform([latest["state"]])[0]
+    encoded_district = encoders["district"].transform([latest["district"]])[0]
+
+    # Create input dataframe
+    input_df = pd.DataFrame({
+
+        "month":[encoded_month],
+        "season":[encoded_season],
+        "station_name":[encoded_station],
+        "state":[encoded_state],
+        "district":[encoded_district],
+
+        "avg_temp":[avg_temp],
+        "min_temp":[min_temp],
+        "max_temp":[max_temp],
+
+        "wind_speed":[wind_speed],
+        "air_pressure":[air_pressure],
+
+        "elevation":[latest["elevation"]],
+        "latitude":[latest["latitude"]],
+        "longitude":[latest["longitude"]],
+
+        "year":[latest["year"]],
+        "month_num":[latest["month_num"]],
+        "day":[latest["day"]],
+        "day_of_week":[latest["day_of_week"]],
+        "week":[latest["week"]],
+
+        "rainfall_lag1":[latest["rainfall_lag1"]],
+        "rainfall_lag2":[latest["rainfall_lag2"]],
+        "rainfall_lag3":[latest["rainfall_lag3"]],
+
+        "rainfall_roll3":[latest["rainfall_roll3"]],
+        "rainfall_roll7":[latest["rainfall_roll7"]]
+
+    })
+
+    prediction = model.predict(input_df)[0]
+
+    st.divider()
+
+    st.subheader("🌧 Prediction Result")
+
+    st.metric(
+        "Predicted Rainfall",
+        f"{prediction:.2f} mm"
+    )
+
+    if prediction < 0.5:
+        st.success("☀ No Rain Expected")
+
+    elif prediction < 10:
+        st.info("🌦 Light Rain Expected")
+
+    elif prediction < 30:
+        st.warning("🌧 Moderate Rain Expected")
+
+    else:
+        st.error("⛈ Heavy Rain Expected")
