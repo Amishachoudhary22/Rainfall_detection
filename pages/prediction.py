@@ -16,13 +16,21 @@ df = load_data()
 # LOAD MODEL
 # ============================
 
+from sklearn.preprocessing import LabelEncoder
+
 @st.cache_resource
 def load_model():
-    model = joblib.load("model/xgboost_model.pkl")
-    encoders = joblib.load("model/label_encoders.pkl")
-    return model, encoders
+    return joblib.load("model/xgboost_model.pkl")
 
-model, encoders = load_model()
+model = load_model()
+
+# Build fresh encoders from the dataset
+encoders = {}
+
+for col in ["month", "season", "station_name", "state", "district"]:
+    le = LabelEncoder()
+    le.fit(df[col].astype(str))
+    encoders[col] = le
 st.title("🌧 Rainfall Prediction")
 
 st.markdown(
@@ -186,18 +194,11 @@ predict = st.button(
 # ==========================================
 
 if predict:
-
-    # Encode categorical features
-    st.write("Month value:", latest["month"])
-    st.write("Encoder classes:", encoders["month"].classes_)
-    st.stop()
-    st.write("Encoder classes:", encoders["month"].classes_)
-    st.stop()
-    encoded_month = latest["month"]
-    encoded_season = encoders["season"].transform([latest["season"]])[0]
-    encoded_station = encoders["station_name"].transform([latest["station_name"]])[0]
-    encoded_state = encoders["state"].transform([latest["state"]])[0]
-    encoded_district = encoders["district"].transform([latest["district"]])[0]
+    encoded_month = encoders["month"].transform([str(latest["month"])])[0]
+    encoded_season = encoders["season"].transform([str(latest["season"])])[0]
+    encoded_station = encoders["station_name"].transform([str(latest["station_name"])])[0]
+    encoded_state = encoders["state"].transform([str(latest["state"])])[0]
+    encoded_district = encoders["district"].transform([str(latest["district"])])[0]
 
     # Create input dataframe
     input_df = pd.DataFrame({
