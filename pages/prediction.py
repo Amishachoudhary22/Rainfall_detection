@@ -36,7 +36,7 @@ def load_data():
     df.dropna(inplace=True)
 
     return df
-
+df = load_data()
 # ============================
 # LOAD MODEL
 # ============================
