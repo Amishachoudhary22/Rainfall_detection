@@ -164,12 +164,7 @@ st.subheader("📍 Location Information")
 col1, col2 = st.columns(2)
 
 with col1:
-
     st.write("**Station:**", latest["station_name"])
-
-    st.write("**Station:**", latest["station_name"])
-    st.write("**Elevation:**", latest["elevation"], "m")
-
     st.write("**Elevation:**", latest["elevation"], "m")
 
 with col2:
