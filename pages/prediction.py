@@ -189,7 +189,8 @@ if predict:
 
     # Encode categorical features
     st.write("Month value:", latest["month"])
-    st.write("Month type:", type(latest["month"]))
+    st.write("Encoder classes:", encoders["month"].classes_)
+    st.stop()
     st.write("Encoder classes:", encoders["month"].classes_)
     st.stop()
     encoded_month = encoders["month"].transform([latest["month"]])[0]
